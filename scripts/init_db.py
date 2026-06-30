@@ -10,7 +10,8 @@ def init_database():
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
 		pinyin TEXT NOT NULL,
 		word TEXT NOT NULL,
-		frequency INTEGER DEFAULT 0
+		frequency INTEGER DEFAULT 0,
+		UNIQUE(pinyin, word)
 	);
 	"""
 
@@ -24,7 +25,11 @@ def init_database():
 	]
 
 	cursor.executemany(
-		"INSERT INTO pinyin_dict(pinyin,word,frequency)VALUES(?,?,?)",
+		"""
+		INSERT OR IGNORE INTO pinyin_dict
+		(pinyin, word, frequency)
+		VALUES (?, ?, ?)
+		""",
 		test_data
 	)
 
