@@ -1,3 +1,4 @@
+from pypinin import lazy_pinyin
 import sqlite3
 
 def init_database():
@@ -5,36 +6,26 @@ def init_database():
 
 	cursor = conn.cursor()
 
-	create_table_sql = """
-	CREATE TABLE IF NOT EXISTS pinyin_dict(
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		pinyin TEXT NOT NULL,
-		word TEXT NOT NULL,
-		frequency INTEGER DEFAULT 0,
-		UNIQUE(pinyin, word)
-	);
-	"""
+	with open("all.txt","r",encoding="utf-8") as f:
+		for line in f:
+			word = line.strip()
 
-	cursor.execute(create_table_sql)
+			if not word:
+				continue
 
-	test_data = [
-		('nihao','你好',100),
-		('zhongwen', '中文', 200),
-		('kaifa', '开发', 50),
-		('pingguo', '苹果', 300)
-	]
+			pinyin = ''.join(lazy_pinyin(word))
 
-	cursor.executemany(
-		"""
-		INSERT OR IGNORE INTO pinyin_dict
-		(pinyin, word, frequency)
-		VALUES (?, ?, ?)
-		""",
-		test_data
-	)
+		cursor.executemany(
+			"""
+			INSERT OR IGNORE INTO pinyin_dict
+			(pinyin, word)
+			VALUES (?, ?)
+			""",
+			(pinyin, word)
+		)
 
-	conn.commit()
-	conn.close()
+		conn.commit()
+		conn.close()
 
 if __name__ == "__main__":
 	init_database()
