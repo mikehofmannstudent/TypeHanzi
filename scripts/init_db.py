@@ -1,10 +1,18 @@
+from pathlib import Path
 from pypinyin import lazy_pinyin
 import sqlite3
 
-DB_NAME = 'ime_dict.db'
-
 def init_database():
-    conn = sqlite3.connect(DB_NAME)
+    SCRIPT_DIR = Path(__file__).resolve().parent
+    PROJECT_ROOT = SCRIPT_DIR.parent
+    DATA_DIR = PROJECT_ROOT / "data"
+
+    # Create data/ if it doesn't exist
+    DATA_DIR.mkdir(exist_ok=True)
+
+    DB_PATH = DATA_DIR / "ime_dict.db"
+
+    conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
     cursor.execute("""
