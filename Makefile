@@ -1,49 +1,27 @@
-# Compiler
 CC = gcc
 
-# Directories
-SRC_DIR = src
-BUILD_DIR = build
-BIN_DIR = bin
+CFLAGS = -Wall -Wextra -std=c11 -Isrc -Ilib
 
-# Compiler flags
-CFLAGS = -Wall -Wextra -I$(SRC_DIR)
+LDFLAGS =
 
-# Libraries
-LIBS =
+SRC = \
+	src/main.c \
+	src/database.c \
+	src/terminal.c \
+	src/ui.c \
+	lib/sqlite3.c
 
-# Target
-TARGET = $(BIN_DIR)/ime_query
+TARGET = typehanzi
 
-# Sources
-SRCS = \
-	$(SRC_DIR)/query.c \
-	$(SRC_DIR)/sqlite3.c
+all: $(TARGET)
 
-# Object files
-OBJS = \
-	$(BUILD_DIR)/query.o \
-	$(BUILD_DIR)/sqlite3.o
-
-all: directories $(TARGET)
-
-directories:
-	mkdir -p $(BUILD_DIR)
-	mkdir -p $(BIN_DIR)
-
-$(TARGET): $(OBJS)
-	$(CC) $(OBJS) -o $@ $(LIBS)
-
-$(BUILD_DIR)/query.o: $(SRC_DIR)/query.c
-	$(CC) $(CFLAGS) -c $< -o $@
-
-$(BUILD_DIR)/sqlite3.o: $(SRC_DIR)/sqlite3.c
-	$(CC) $(CFLAGS) -c $< -o $@
+$(TARGET): $(SRC)
+	$(CC) $(CFLAGS) $(SRC) -o $(TARGET) $(LDFLAGS)
 
 clean:
-	rm -rf $(BUILD_DIR) $(BIN_DIR)
+	rm -f $(TARGET)
 
-run: all
+run: $(TARGET)
 	./$(TARGET)
 
-.PHONY: all clean run directories
+.PHONY: all clean run
